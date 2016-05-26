@@ -119,6 +119,8 @@ d3heatmap <- function(x,
   cellnote,
   cellnote_scale = FALSE,
   cellnote_var = "Value",
+  cellnote_row = "Row",
+  cellnote_col = "Column",
 
   ##TODO: decide later which names/conventions to keep
   theme = NULL,
@@ -337,7 +339,9 @@ d3heatmap <- function(x,
     brush_color = brush_color,
     show_grid = show_grid,
     anim_duration = anim_duration,
-    cellnote_var = cellnote_var
+    cellnote_var = cellnote_var,
+    cellnote_row = cellnote_row,
+    cellnote_col = cellnote_col
   ))
 
   if (is.null(rowDend)) {

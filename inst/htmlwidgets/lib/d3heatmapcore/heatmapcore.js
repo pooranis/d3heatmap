@@ -146,6 +146,8 @@ function heatmap(selector, data, options) {
   opts.yaxis_font_size = options.yaxis_font_size;
   opts.anim_duration = options.anim_duration;
   opts.cellnote_var = options.cellnote_var;
+  opts.cellnote_row = options.cellnote_row;
+  opts.cellnote_col = options.cellnote_col;
   if (typeof(opts.anim_duration) === 'undefined') {
     opts.anim_duration = 500;
   }
@@ -240,9 +242,9 @@ function heatmap(selector, data, options) {
         .attr('class', 'd3heatmap-tip')
         .html(function(d, i) {
           return "<table>" +
-            "<tr><th align=\"right\">Row</th><td>" + htmlEscape(data.rows[d.row]) + "</td></tr>" +
-            "<tr><th align=\"right\">Column</th><td>" + htmlEscape(data.cols[d.col]) + "</td></tr>" +
-            "<tr><th align=\"right\">"+opts.cellnote_var +"</th><td>" + htmlEscape(d.label) + "</td></tr>" +
+            "<tr><th align=\"right\">"+ opts.cellnote_row +"</th><td>" + htmlEscape(data.rows[d.row]) + "</td></tr>" +
+            "<tr><th align=\"right\">"+ opts.cellnote_col +"</th><td>" + htmlEscape(data.cols[d.col]) + "</td></tr>" +
+            "<tr><th align=\"right\">"+ opts.cellnote_var +"</th><td>" + htmlEscape(d.label) + "</td></tr>" +
             "</table>";
         })
         .direction("se")
