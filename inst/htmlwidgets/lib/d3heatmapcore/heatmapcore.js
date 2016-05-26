@@ -1,22 +1,22 @@
 function heatmap(selector, data, options) {
 
   // ==== BEGIN HELPERS =================================
-  
+
   function htmlEscape(str) {
     return (str+"").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
-  
+
   // Given a list of widths/heights and a total width/height, provides
   // easy access to the absolute top/left/width/height of any individual
   // grid cell. Optionally, a single cell can be specified as a "fill"
   // cell, meaning it will take up any remaining width/height.
-  // 
+  //
   // rows and cols are arrays that contain numeric pixel dimensions,
   // and up to one "*" value.
   function GridSizer(widths, heights, /*optional*/ totalWidth, /*optional*/ totalHeight) {
     this.widths = widths;
     this.heights = heights;
-  
+
     var fillColIndex = null;
     var fillRowIndex = null;
     var usedWidth = 0;
@@ -57,21 +57,21 @@ function heatmap(selector, data, options) {
       }
     }
   }
-  
+
   GridSizer.prototype.getCellBounds = function(x, y) {
     if (x < 0 || x >= this.widths.length || y < 0 || y >= this.heights.length)
       throw new Error("Invalid cell bounds");
-  
+
     var left = 0;
     for (var i = 0; i < x; i++) {
       left += this.widths[i];
     }
-  
+
     var top = 0;
     for (var j = 0; j < y; j++) {
       top += this.heights[j];
     }
-  
+
     return {
       width: this.widths[x],
       height: this.heights[y],
@@ -79,7 +79,7 @@ function heatmap(selector, data, options) {
       left: left
     }
   }
-  
+
   // ==== END HELPERS ===================================
 
 
@@ -108,7 +108,7 @@ function heatmap(selector, data, options) {
 
     this.datapoint_hover = function(_) {
       if (!arguments.length) return this._datapoint_hover;
-      
+
       this._datapoint_hover = _;
       this._events.datapoint_hover.call(this, _);
     };
@@ -145,6 +145,7 @@ function heatmap(selector, data, options) {
   opts.xaxis_font_size = options.xaxis_font_size;
   opts.yaxis_font_size = options.yaxis_font_size;
   opts.anim_duration = options.anim_duration;
+  opts.cellnote_var = options.cellnote_var;
   if (typeof(opts.anim_duration) === 'undefined') {
     opts.anim_duration = 500;
   }
@@ -155,7 +156,7 @@ function heatmap(selector, data, options) {
   if (!data.cols) {
     opts.xclust_height = 0;
   }
-  
+
   var gridSizer = new GridSizer(
     [opts.yclust_width, "*", opts.yaxis_width],
     [opts.xclust_height, "*", opts.xaxis_height],
@@ -188,7 +189,7 @@ function heatmap(selector, data, options) {
     var colmap = inner.append("svg").classed("colormap", true).style(cssify(colormapBounds));
     var xaxis = inner.append("svg").classed("axis xaxis", true).style(cssify(xaxisBounds));
     var yaxis = inner.append("svg").classed("axis yaxis", true).style(cssify(yaxisBounds));
-    
+
     // Hack the width of the x-axis to allow x-overflow of rotated labels; the
     // QtWebkit viewer won't allow svg elements to overflow:visible.
     xaxis.style("width", (opts.width - opts.yclust_width) + "px");
@@ -212,13 +213,13 @@ function heatmap(selector, data, options) {
         typeof(hl.x) === 'number' || typeof(hl.y) === 'number');
     });
   })();
-  
+
   var row = !data.rows ? null : dendrogram(el.select('svg.rowDend'), data.rows, false, rowDendBounds.width, rowDendBounds.height, opts.axis_padding);
   var col = !data.cols ? null : dendrogram(el.select('svg.colDend'), data.cols, true, colDendBounds.width, colDendBounds.height, opts.axis_padding);
   var colormap = colormap(el.select('svg.colormap'), data.matrix, colormapBounds.width, colormapBounds.height);
   var xax = axisLabels(el.select('svg.xaxis'), data.cols || data.matrix.cols, true, xaxisBounds.width, xaxisBounds.height, opts.axis_padding);
   var yax = axisLabels(el.select('svg.yaxis'), data.rows || data.matrix.rows, false, yaxisBounds.width, yaxisBounds.height, opts.axis_padding);
-  
+
   function colormap(svg, data, width, height) {
     // Check for no data
     if (data.length === 0)
@@ -227,26 +228,26 @@ function heatmap(selector, data, options) {
 	if (!opts.show_grid) {
       svg.style("shape-rendering", "crispEdges");
 	}
- 
+
     var cols = data.dim[1];
     var rows = data.dim[0];
-    
+
     var merged = data.merged;
-    
+
     var x = d3.scale.linear().domain([0, cols]).range([0, width]);
     var y = d3.scale.linear().domain([0, rows]).range([0, height]);
     var tip = d3.tip()
         .attr('class', 'd3heatmap-tip')
         .html(function(d, i) {
-          return "<table>" + 
+          return "<table>" +
             "<tr><th align=\"right\">Row</th><td>" + htmlEscape(data.rows[d.row]) + "</td></tr>" +
             "<tr><th align=\"right\">Column</th><td>" + htmlEscape(data.cols[d.col]) + "</td></tr>" +
-            "<tr><th align=\"right\">Value</th><td>" + htmlEscape(d.label) + "</td></tr>" +
+            "<tr><th align=\"right\">"+opts.cellnote_var +"</th><td>" + htmlEscape(d.label) + "</td></tr>" +
             "</table>";
         })
         .direction("se")
         .style("position", "fixed");
-    
+
     var brush = d3.svg.brush()
         .x(x)
         .y(y)
@@ -331,7 +332,7 @@ function heatmap(selector, data, options) {
       y.range([_.translate[1], height * _.scale[1] + _.translate[1]]);
       draw(rect.transition().duration(opts.anim_duration).ease("linear"));
     });
-    
+
 
     var brushG = svg.append("g")
         .attr('class', 'brush')
@@ -352,7 +353,7 @@ function heatmap(selector, data, options) {
             offsetX = e.clientX - rect.left,
             offsetY = e.clientY - rect.top;
           }
-          
+
           var col = Math.floor(x.invert(offsetX));
           var row = Math.floor(y.invert(offsetY));
           var label = merged[row*cols + col].label;
@@ -388,7 +389,7 @@ function heatmap(selector, data, options) {
     } else if (data.length) {
       leaves = data;
     }
-    
+
     // Define scale, axis
     var scale = d3.scale.ordinal()
         .domain(leaves)
@@ -407,7 +408,7 @@ function heatmap(selector, data, options) {
     var fontSize = opts[(rotated ? 'x' : 'y') + 'axis_font_size']
         || Math.min(18, Math.max(9, scale.rangeBand() - (rotated ? 11: 8))) + "px";
     axisNodes.selectAll("text").style("font-size", fontSize);
-    
+
     var mouseTargets = svg.append("g")
       .selectAll("g").data(leaves);
     mouseTargets
@@ -446,7 +447,7 @@ function heatmap(selector, data, options) {
         .attr("transform", "rotate(45),translate(6, 0)")
         .style("text-anchor", "start");
     }
-    
+
     controller.on('highlight.axis-' + (rotated ? 'x' : 'y'), function(hl) {
       var ticks = axisNodes.selectAll('.tick');
       var selected = hl[rotated ? 'x' : 'y'];
@@ -492,14 +493,14 @@ function heatmap(selector, data, options) {
     });
 
   }
-  
+
   function edgeStrokeWidth(node) {
     if (node.edgePar && node.edgePar.lwd)
       return node.edgePar.lwd;
     else
       return 1;
   }
-  
+
   function maxChildStrokeWidth(node, recursive) {
     var max = 0;
     for (var i = 0; i < node.children.length; i++) {
@@ -510,21 +511,21 @@ function heatmap(selector, data, options) {
     }
     return max;
   }
-  
+
   function dendrogram(svg, data, rotated, width, height, padding) {
     var topLineWidth = maxChildStrokeWidth(data, false);
-    
+
     var x = d3.scale.linear()
         .domain([data.height, 0])
         .range([topLineWidth/2, width-padding]);
     var y = d3.scale.linear()
         .domain([0, height])
         .range([0, height]);
-    
+
     var cluster = d3.layout.cluster()
         .separation(function(a, b) { return 1; })
         .size([rotated ? width : height, NaN]);
-    
+
     var transform = "translate(1,0)";
     if (rotated) {
       // Flip dendrogram vertically
@@ -538,7 +539,7 @@ function heatmap(selector, data, options) {
         .attr("height", height)
       .append("g")
         .attr("transform", transform);
-    
+
     var nodes = cluster.nodes(data),
         links = cluster.links(nodes);
 
@@ -553,7 +554,7 @@ function heatmap(selector, data, options) {
         edgePar: link.target.edgePar
       };
     });
-    
+
     var lines = dendrG.selectAll("polyline").data(links1);
     lines
       .enter().append("polyline")
@@ -601,7 +602,7 @@ function heatmap(selector, data, options) {
             x(d.source.y) + "," + y(d.target.x) + " " +
             x(d.target.y) + "," + y(d.target.x);
       }
-      
+
       selection
           .attr("points", elbow);
     }
@@ -616,13 +617,13 @@ function heatmap(selector, data, options) {
     draw(lines);
   }
 
- 
+
   var dispatcher = d3.dispatch('hover', 'click');
-  
+
   controller.on("datapoint_hover", function(_) {
     dispatcher.hover({data: _});
   });
-  
+
   function on_col_label_mouseenter(e) {
     controller.highlight(+d3.select(this).attr("index"), null);
   }
