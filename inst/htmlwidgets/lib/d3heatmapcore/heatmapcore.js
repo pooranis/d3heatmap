@@ -407,9 +407,13 @@ function heatmap(selector, data, options) {
     var axisNodes = svg.append("g")
         .attr("transform", rotated ? "translate(0," + padding + ")" : "translate(" + padding + ",0)")
         .call(axis);
-    var fontSize = opts[(rotated ? 'x' : 'y') + 'axis_font_size']
-        || Math.min(18, Math.max(9, scale.rangeBand() - (rotated ? 11: 8))) + "px";
-    fontSize = Math.min(fontSize,Math.min(18, Math.max(9, scale.rangeBand() - (rotated ? 11: 8))) + "px";)
+    var yfontSize = opts['yaxis_font_size'] || Math.min(18, Math.max(9, scale.rangeBand() - (8))) + "px";
+    yfontSize = Math.min(yfontSize.match(/\d+/)[0], Math.min(18, Math.max(9, scale.rangeBand() - (8)))) + "px";
+    var xfontSize = opts['xaxis_font_size'] || Math.min(18, Math.max(9, scale.rangeBand() - (11))) + "px";
+//    var fontSize = opts[(rotated ? 'x' : 'y') + 'axis_font_size'].match(/\d+/)[0]
+//        || Math.min(18, Math.max(9, scale.rangeBand() - (rotated ? 11: 8)));
+//    fontSize = Math.min(fontSize, Math.min(18, Math.max(9, scale.rangeBand() - (rotated ? 11: 8)))) + "px";
+    var fontSize = (rotated ? xfontSize : yfontSize);
     axisNodes.selectAll("text").style("font-size", fontSize);
 
     var mouseTargets = svg.append("g")
