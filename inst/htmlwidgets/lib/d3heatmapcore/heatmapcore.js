@@ -421,7 +421,7 @@ function heatmap(selector, data, options) {
     mouseTargets
       .enter()
         .append("g").append("rect")
-          .attr("transform", rotated ? "rotate(45),translate(0,0)" : "")
+          .attr("transform", rotated ? "rotate(60),translate(0,0)" : "")
           .attr("fill", "transparent")
           .on("click", function(d, i) {
             var dim = rotated ? 'x' : 'y';
@@ -451,7 +451,7 @@ function heatmap(selector, data, options) {
 
     if (rotated) {
       axisNodes.selectAll("text")
-        .attr("transform", "rotate(45),translate(6, 0)")
+        .attr("transform", "rotate(60) translate(8, -10)")
         .style("text-anchor", "start");
     }
 
