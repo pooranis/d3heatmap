@@ -1,8 +1,8 @@
 dependencies:
-- name: d3
+- name: d3v3
   version: 3.5.3
   src: htmlwidgets/lib/d3-3.5.3
-  script: d3.js
+  script: d3v3.js
 - name: d3heatmapcore
   version: 0.0.0
   src: htmlwidgets/lib/d3heatmapcore
