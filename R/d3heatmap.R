@@ -326,8 +326,10 @@ d3heatmap <- function(x,
 
     colors <- scales::col_numeric(colors, rng, na.color = "transparent")
   }
+  jx <- x
+  jx[which(jx == 0)] <- NA
 
-  imgUri <- encodeAsPNG(t(x), colors)
+  imgUri <- encodeAsPNG(t(jx), colors)
 
   options <- NULL
 
