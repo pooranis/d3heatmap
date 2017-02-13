@@ -148,6 +148,7 @@ function heatmap(selector, data, options) {
   opts.cellnote_var = options.cellnote_var;
   opts.cellnote_row = options.cellnote_row;
   opts.cellnote_col = options.cellnote_col;
+  opts.xaxis_angle = options.xaxis_angle;
   if (typeof(opts.anim_duration) === 'undefined') {
     opts.anim_duration = 500;
   }
@@ -421,7 +422,7 @@ function heatmap(selector, data, options) {
     mouseTargets
       .enter()
         .append("g").append("rect")
-          .attr("transform", rotated ? "rotate(60),translate(0,0)" : "")
+          .attr("transform", rotated ? "rotate(" + opts.xaxis_angle + "),translate(0,0)" : "")
           .attr("fill", "transparent")
           .on("click", function(d, i) {
             var dim = rotated ? 'x' : 'y';
@@ -451,7 +452,7 @@ function heatmap(selector, data, options) {
 
     if (rotated) {
       axisNodes.selectAll("text")
-        .attr("transform", "rotate(60) translate(8, -10)")
+        .attr("transform", "rotate(" + opts.xaxis_angle + ") translate(8, -10)")
         .style("text-anchor", "start");
     }
 

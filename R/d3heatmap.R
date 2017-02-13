@@ -133,6 +133,7 @@ d3heatmap <- function(x,
   brush_color = "#0000FF",
   show_grid = TRUE,
   anim_duration = 500,
+  xaxis_angle = 60,
 
   ...
 ) {
@@ -343,7 +344,8 @@ d3heatmap <- function(x,
     anim_duration = anim_duration,
     cellnote_var = cellnote_var,
     cellnote_row = cellnote_row,
-    cellnote_col = cellnote_col
+    cellnote_col = cellnote_col,
+    xaxis_angle = xaxis_angle
   ))
 
   if (is.null(rowDend)) {
